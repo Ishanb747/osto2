@@ -9,7 +9,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"osto_hackathon2/Backend/internal/auth"
+	"osto_hackathon2/Backend/internal/handlers"
+	"osto_hackathon2/Backend/internal/models"
 )
 
 func main() {
@@ -28,8 +29,8 @@ func main() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// Migrate user model
-	db.AutoMigrate(&auth.User{})
+	// Migrate user and billing models
+	db.AutoMigrate(&models.User{}, &models.Plan{}, &models.Module{}, &models.Subscription{}, &models.UsageRecord{}, &models.Invoice{}, &models.InvoiceLineItem{}, &models.Payment{}, &models.PaymentMethod{})
 
 	r := gin.Default()
 
@@ -46,8 +47,24 @@ func main() {
 		c.Next()
 	})
 
-	r.POST("/register", auth.RegisterHandler(db))
-	r.POST("/login", auth.LoginHandler(db))
+	r.POST("/register", handlers.RegisterHandler(db))
+	r.POST("/login", handlers.LoginHandler(db))
+
+	// Billing routes
+	r.GET("/companies/:id/subscriptions", handlers.ListSubscriptionsHandler(db))
+	r.GET("/companies/:id/payment_methods", handlers.ListPaymentMethodsHandler(db))
+	r.POST("/companies/:id/payment_methods", handlers.AddPaymentMethodHandler(db))
+	r.PUT("/payment_methods/:id", handlers.UpdatePaymentMethodHandler(db))
+	r.DELETE("/payment_methods/:id", handlers.DeletePaymentMethodHandler(db))
+	r.GET("/companies/:id/invoices", handlers.ListInvoicesHandler(db))
+	r.GET("/subscriptions/:id", handlers.SubscriptionDetailHandler(db))
+	r.POST("/subscriptions", handlers.CreateSubscriptionHandler(db))
+	r.POST("/subscriptions/:id/upgrade", handlers.UpgradeSubscriptionHandler(db))
+	r.POST("/subscriptions/:id/downgrade", handlers.DowngradeSubscriptionHandler(db))
+	r.POST("/subscriptions/:id/pause", handlers.PauseSubscriptionHandler(db))
+	r.POST("/subscriptions/:id/cancel", handlers.CancelSubscriptionHandler(db))
+	r.DELETE("/subscriptions/:id", handlers.DeleteSubscriptionHandler(db))
+	r.GET("/usage/:subscription_id", handlers.UsageHandler(db))
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
