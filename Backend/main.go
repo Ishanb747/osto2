@@ -66,5 +66,15 @@ func main() {
 	r.DELETE("/subscriptions/:id", handlers.DeleteSubscriptionHandler(db))
 	r.GET("/usage/:subscription_id", handlers.UsageHandler(db))
 
-	r.Run() // listen and serve on 0.0.0.0:8080
+	// after defining routes
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("listening on %s", port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatalf("server failed: %v", err)
+	}
+
 }
