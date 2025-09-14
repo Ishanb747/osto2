@@ -4,14 +4,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 const COMPANY_ID = 1;
 
 const fetchSubscriptions = async () => {
-  const res = await fetch(`http://localhost:8080/companies/${COMPANY_ID}/subscriptions`);
+  const res = await fetch(`https://osto22.onrender.com/companies/${COMPANY_ID}/subscriptions`);
   if (!res.ok) throw new Error("Failed to fetch subscriptions");
   return res.json();
 };
 
 const subscriptionAction = async ({ id, action, payload }) => {
   // Use /subscriptions/{id}/{action} for actions
-  let url = `http://localhost:8080/subscriptions/${id}/${action}`;
+  let url = `https://osto22.onrender.com/subscriptions/${id}/${action}`;
   let options = { method: "POST", headers: { "Content-Type": "application/json" } };
   if (payload) options.body = JSON.stringify(payload);
   const res = await fetch(url, options);
@@ -21,7 +21,7 @@ const subscriptionAction = async ({ id, action, payload }) => {
 
 const fetchUsage = async (id) => {
   // Use /usage/{id} for usage
-  const res = await fetch(`http://localhost:8080/usage/${id}`);
+  const res = await fetch(`https://osto22.onrender.com:8080/usage/${id}`);
   if (!res.ok) throw new Error("Failed to fetch usage");
   return res.json();
 };
@@ -41,7 +41,7 @@ const SubscriptionCard = ({ sub, refetch }) => {
         // First cancel, then delete
         await subscriptionAction({ id: sub.id, action, payload });
         // Call DELETE /subscriptions/{id}
-        const res = await fetch(`http://localhost:8080/subscriptions/${sub.id}`, { method: "DELETE" });
+        const res = await fetch(`https://osto22.onrender.com/subscriptions/${sub.id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Failed to delete subscription");
         return true;
       } else {

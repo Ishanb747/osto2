@@ -5,7 +5,7 @@ import { Download } from "lucide-react";
 const COMPANY_ID = 1;
 
 const fetchInvoices = async () => {
-  const res = await fetch(`http://localhost:8080/companies/${COMPANY_ID}/invoices`);
+  const res = await fetch(`https://osto22.onrender.com/companies/${COMPANY_ID}/invoices`);
   if (!res.ok) throw new Error("Failed to fetch invoices");
   return res.json();
 };

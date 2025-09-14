@@ -15,6 +15,13 @@ const Subscriptions = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [form, setForm] = useState({
+    module_id: '',
+    plan_id: '',
+    status: 'Active',
+    next_billing_date: new Date().toISOString().slice(0, 10)
+  });
 
   const fetchSubscriptions = async () => {
     setLoading(true);
@@ -49,25 +56,81 @@ const Subscriptions = () => {
         <h2 className="text-2xl font-bold">Active Subscriptions</h2>
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center space-x-2 w-full sm:w-auto justify-center"
-          onClick={async () => {
-            // Example: Add a new module (replace with actual module/plan IDs as needed)
-            await fetch(`http://localhost:8080/subscriptions`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                company_id: COMPANY_ID,
-                plan_id: 1,
-                module_id: 1,
-                status: 'Active',
-                next_billing_date: new Date().toISOString().slice(0, 10)
-              })
-            });
-            fetchSubscriptions();
-          }}
+          onClick={() => setModalOpen(true)}
         >
           <Plus className="h-4 w-4" />
           <span>Add Module</span>
         </button>
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+            <button className="absolute top-2 right-2 text-gray-500" onClick={() => setModalOpen(false)}>×</button>
+            <h2 className="text-xl font-bold mb-4">Add Module Subscription</h2>
+            <form
+              onSubmit={async e => {
+                e.preventDefault();
+                await fetch(`http://localhost:8080/subscriptions`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    company_id: COMPANY_ID,
+                    plan_id: form.plan_id,
+                    module_id: form.module_id,
+                    status: form.status,
+                    next_billing_date: form.next_billing_date
+                  })
+                });
+                setModalOpen(false);
+                setForm({ module_id: '', plan_id: '', status: 'Active', next_billing_date: new Date().toISOString().slice(0, 10) });
+                fetchSubscriptions();
+              }}
+              className="flex flex-col gap-3"
+            >
+              <input
+                type="text"
+                name="module_id"
+                placeholder="Module ID"
+                value={form.module_id}
+                onChange={e => setForm({ ...form, module_id: e.target.value })}
+                className="border rounded px-3 py-2"
+                required
+              />
+              <input
+                type="text"
+                name="plan_id"
+                placeholder="Plan ID"
+                value={form.plan_id}
+                onChange={e => setForm({ ...form, plan_id: e.target.value })}
+                className="border rounded px-3 py-2"
+                required
+              />
+              <select
+                name="status"
+                value={form.status}
+                onChange={e => setForm({ ...form, status: e.target.value })}
+                className="border rounded px-3 py-2"
+              >
+                <option value="Active">Active</option>
+                <option value="Grace">Grace</option>
+                <option value="Suspended">Suspended</option>
+                <option value="Expired">Expired</option>
+              </select>
+              <input
+                type="date"
+                name="next_billing_date"
+                value={form.next_billing_date}
+                onChange={e => setForm({ ...form, next_billing_date: e.target.value })}
+                className="border rounded px-3 py-2"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-blue-600 text-white px-4 py-2 rounded mt-2"
+              >Add Subscription</button>
+            </form>
+          </div>
+        </div>
+      )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">

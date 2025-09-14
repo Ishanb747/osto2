@@ -6,13 +6,13 @@ import { CreditCard, Plus, Edit3, Trash2 } from 'lucide-react';
 const COMPANY_ID = 1;
 
 const fetchPaymentMethods = async () => {
-  const res = await fetch(`http://localhost:8080/companies/${COMPANY_ID}/payment_methods`);
+  const res = await fetch(`https://osto22.onrender.com/companies/${COMPANY_ID}/payment_methods`);
   if (!res.ok) throw new Error('Failed to fetch payment methods');
   return res.json();
 };
 
 const addPaymentMethod = async (payload) => {
-  const res = await fetch(`http://localhost:8080/companies/${COMPANY_ID}/payment_methods`, {
+  const res = await fetch(`https://osto22.onrender.com/companies/${COMPANY_ID}/payment_methods`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -22,13 +22,13 @@ const addPaymentMethod = async (payload) => {
 };
 
 const deletePaymentMethod = async (id) => {
-  const res = await fetch(`http://localhost:8080/payment_methods/${id}`, { method: 'DELETE' });
+  const res = await fetch(`https://osto22.onrender.com/payment_methods/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Failed to delete payment method');
   return res.json();
 };
 
 const makePrimary = async (id) => {
-  const res = await fetch(`http://localhost:8080/payment_methods/${id}`, {
+  const res = await fetch(`https://osto22.onrender.com/payment_methods/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ primary: true }),
@@ -39,6 +39,7 @@ const makePrimary = async (id) => {
 
 const AddPaymentModal = ({ open, onClose, onSubmit, isLoading, error }) => {
   const [form, setForm] = useState({
+    name: '',
     type: 'card',
     brand: '',
     last4: '',
@@ -61,6 +62,7 @@ const AddPaymentModal = ({ open, onClose, onSubmit, isLoading, error }) => {
           }}
           className="flex flex-col gap-3"
         >
+          <input type="text" name="name" placeholder="Name (e.g. Personal Visa)" value={form.name} onChange={handleChange} className="border rounded px-3 py-2" required />
           <select name="type" value={form.type} onChange={handleChange} className="border rounded px-3 py-2">
             <option value="card">Card</option>
             <option value="bank">Bank</option>
@@ -102,10 +104,16 @@ const PaymentMethods = () => {
   const deleteMutation = useMutation({
     mutationFn: deletePaymentMethod,
     onSuccess: refetch,
+    onError: (error) => {
+      alert(error.message || 'Failed to delete payment method');
+    },
   });
   const primaryMutation = useMutation({
     mutationFn: makePrimary,
     onSuccess: refetch,
+    onError: (error) => {
+      alert(error.message || 'Failed to make primary');
+    },
   });
 
   if (isLoading) return <div className="p-8 text-center">Loading...</div>;
@@ -128,10 +136,13 @@ const PaymentMethods = () => {
               <div className="flex items-center space-x-3">
                 <CreditCard className="h-8 w-8 text-gray-600" />
                 <div>
-                  <p className="font-medium">
-                    {method.type === 'card' ? method.brand : method.bank}
+                  <p className="font-medium text-lg">{method.name}</p>
+                  <p className="text-sm text-gray-500">
+                    {method.type === 'card' ? `${method.brand} •••• ${method.last4}` : method.bank}
                   </p>
-                  <p className="text-sm text-gray-500">•••• {method.last4}</p>
+                  {method.type === 'card' && (
+                    <p className="text-sm text-gray-500">Expires {method.expiry}</p>
+                  )}
                 </div>
               </div>
               {method.primary && (
@@ -145,8 +156,17 @@ const PaymentMethods = () => {
               <button
                 key={`primary-${method.id}`}
                 className={`flex-1 py-2 rounded text-sm ${method.primary ? 'cursor-not-allowed bg-gray-200 text-gray-500' : 'text-blue-600 border border-blue-600 hover:bg-blue-50'}`}
-                onClick={() => !method.primary && primaryMutation.mutate(method.id)}
-                disabled={method.primary || primaryMutation.isLoading}
+                onClick={() => {
+                  if (!method.primary && !primaryMutation.isLoading) {
+                    if (method.id === undefined) {
+                      console.warn('Attempted to make primary with undefined ID:', method);
+                      alert('Error: Payment method ID is undefined.');
+                      return;
+                    }
+                    primaryMutation.mutate(method.id);
+                  }
+                }}
+                disabled={primaryMutation.isLoading}
               >{method.primary ? 'Primary' : 'Make Primary'}</button>
               <button key={`edit-${method.id}`} className="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50">
                 <Edit3 className="h-4 w-4" />
