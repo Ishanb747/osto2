@@ -81,7 +81,7 @@ const Invoices = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                     <a
-                      href={`http://localhost:8080/invoices/${invoice.id}/pdf`}
+                      href={`https://osto22.onrender.com/invoices/${invoice.id}/pdf`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:text-blue-900"

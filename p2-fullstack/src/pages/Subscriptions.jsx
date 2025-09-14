@@ -26,7 +26,7 @@ const Subscriptions = () => {
   const fetchSubscriptions = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8080/companies/${COMPANY_ID}/subscriptions`);
+      const res = await fetch(`https://osto22.onrender.com/companies/${COMPANY_ID}/subscriptions`);
       const data = await res.json();
       setSubscriptions(data);
       setError(null);
@@ -43,7 +43,7 @@ const Subscriptions = () => {
   }, []);
 
   const handleAction = async (id, action) => {
-    await fetch(`http://localhost:8080/subscriptions/${id}/${action}`, { method: 'POST' });
+    await fetch(`https://osto22.onrender.com/subscriptions/${id}/${action}`, { method: 'POST' });
     fetchSubscriptions();
   };
 
@@ -69,7 +69,7 @@ const Subscriptions = () => {
             <form
               onSubmit={async e => {
                 e.preventDefault();
-                await fetch(`http://localhost:8080/subscriptions`, {
+                await fetch(`https://osto22.onrender.com/subscriptions`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
@@ -176,7 +176,7 @@ const Subscriptions = () => {
                     <button
                       className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
                       onClick={async () => {
-                        const res = await fetch(`http://localhost:8080/subscriptions/${sub.id}`);
+                        const res = await fetch(`https://osto22.onrender.com/subscriptions/${sub.id}`);
                         const details = await res.json();
                         alert(JSON.stringify(details, null, 2));
                       }}

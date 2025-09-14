@@ -31,7 +31,7 @@ const ModuleCard = ({ subscription, refetch }) => {
    */
   const handleAction = async (action) => {
     setActionLoading(true);
-    await fetch(`http://localhost:8080/subscriptions/${subscription.id}/${action}`, { method: "POST" });
+    await fetch(`https://osto22.onrender.com/subscriptions/${subscription.id}/${action}`, { method: "POST" });
     setActionLoading(false);
     refetch();
   };

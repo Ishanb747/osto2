@@ -5,7 +5,7 @@ const PaymentModal = ({ invoiceId, onClose, refetch }) => {
 
   const handlePay = async () => {
     // Initiate payment (mock or Stripe checkout)
-    await fetch(`http://localhost:8080/invoices/${invoiceId}/pay`, { method: "POST" });
+    await fetch(`https://osto22.onrender.com/invoices/${invoiceId}/pay`, { method: "POST" });
     refetch();
     onClose();
   };

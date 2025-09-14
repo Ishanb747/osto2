@@ -19,7 +19,7 @@ const InvoiceRow = ({ invoice, onPay }) => (
     <td className="px-4 py-2">{invoice.modules?.join(", ")}</td>
     <td className="px-4 py-2 flex gap-2">
       <a
-        href={`http://localhost:8080/invoices/${invoice.id}/pdf`}
+        href={`https://osto22.onrender.com/invoices/${invoice.id}/pdf`}
         target="_blank"
         rel="noopener noreferrer"
         className="bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"

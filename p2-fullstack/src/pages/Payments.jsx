@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 const COMPANY_ID = 1;
 
 const fetchPayments = async () => {
-  const res = await fetch(`http://localhost:8080/companies/${COMPANY_ID}/payments`);
+  const res = await fetch(`https://osto22.onrender.com/companies/${COMPANY_ID}/payments`);
   if (!res.ok) throw new Error("Failed to fetch payments");
   return res.json();
 };

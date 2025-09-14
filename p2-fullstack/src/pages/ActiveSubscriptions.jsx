@@ -107,7 +107,7 @@ const SubscriptionCard = ({ sub, refetch }) => {
 };
 
 const createSubscription = async (payload) => {
-  const res = await fetch(`http://localhost:8080/subscriptions`, {
+  const res = await fetch(`https://osto22.onrender.com/subscriptions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

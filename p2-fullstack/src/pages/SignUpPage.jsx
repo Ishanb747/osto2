@@ -29,7 +29,7 @@ const SignUpPage = () => {
     setShowSuccess(false);
     setErrors({});
     try {
-      const response = await fetch("http://localhost:8080/register", {
+      const response = await fetch("https://osto22.onrender.com/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
